@@ -11,7 +11,29 @@ public class WordImagePair {
     private URL imageUrl;
 
     public WordImagePair(String word, String imageUrl) throws MalformedURLException {
-        this.word = word;
-        this.imageUrl = new URL(imageUrl);
+        setWord(word);
+        setImageUrl(imageUrl);
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        if (word == null || word.trim().isEmpty()) {
+            throw new IllegalArgumentException("Das Wort darf nicht null oder leer sein.");
+        }
+        this.word = word.trim();
+    }
+
+    public URL getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) throws MalformedURLException {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("Die Bild-URL darf nicht null oder leer sein.");
+        }
+        this.imageUrl = new URL(imageUrl.trim());
     }
 }

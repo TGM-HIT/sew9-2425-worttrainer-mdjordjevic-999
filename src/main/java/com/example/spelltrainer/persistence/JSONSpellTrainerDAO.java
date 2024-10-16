@@ -15,12 +15,14 @@ public class JSONSpellTrainerDAO implements SpellTrainerDAO {
 
     @Override
     public void save(SpellTrainer spellTrainer) throws Exception {
-        // Leere Methode
+        // Vorbereitung für die JSON-Speicherung
+        // Hier wird später die Logik zur Speicherung implementiert
     }
 
     @Override
     public SpellTrainer load() throws Exception {
-        // Leere Methode
+        // Vorbereitung für das Laden von JSON
+        // Hier wird später die Logik zum Laden implementiert
         return null;
     }
 }

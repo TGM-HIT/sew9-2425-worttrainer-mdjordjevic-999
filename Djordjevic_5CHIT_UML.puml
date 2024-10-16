@@ -1,0 +1,74 @@
+@startuml
+
+package "spelltrainer.gui" {
+    class SpellTrainerGUI {
+        - static final String DATA_FILE
+        - SpellTrainer spellTrainer
+        - SpellTrainerDAO dao
+        - boolean lastAttemptCorrect
+        + SpellTrainerGUI()
+        + void start()
+        - String buildMessage()
+        - String buildFinalStatistics()
+        - SpellTrainer createNewSpellTrainer()
+        - WordImagePair createWordImagePair(String word, String imageUrl)
+        - ImageIcon loadImageIcon(String imageUrl)
+        + static void main(String[] args)
+    }
+}
+
+package "spelltrainer.model" {
+    class SpellTrainer {
+        - List<WordImagePair> wordImagePairs
+        - WordImagePair currentPair
+        - int totalAttempts
+        - int correctAttempts
+        - int incorrectAttempts
+        - Random random
+        + SpellTrainer(List<WordImagePair> wordImagePairs)
+        + List<WordImagePair> getWordImagePairs()
+        + void setWordImagePairs(List<WordImagePair> wordImagePairs)
+        + WordImagePair getCurrentPair()
+        + void setCurrentPair(WordImagePair currentPair)
+        + void selectPairByIndex(int index)
+        + void selectRandomPair()
+        + boolean guessWord(String guess)
+        + int getTotalAttempts()
+        + void setTotalAttempts(int totalAttempts)
+        + int getCorrectAttempts()
+        + void setCorrectAttempts(int correctAttempts)
+        + int getIncorrectAttempts()
+        + void setIncorrectAttempts(int incorrectAttempts)
+    }
+
+    class WordImagePair {
+        - String word
+        - URL imageUrl
+        + WordImagePair(String word, String imageUrl) throws MalformedURLException
+        + String getWord()
+        + void setWord(String word)
+        + URL getImageUrl()
+        + void setImageUrl(String imageUrl) throws MalformedURLException
+    }
+}
+
+package "spelltrainer.persistence" {
+    class JSONSpellTrainerDAO {
+        - final String filename
+        + JSONSpellTrainerDAO(String filename)
+        + void save(SpellTrainer spellTrainer) throws IOException, JSONException
+        + SpellTrainer load() throws IOException, MalformedURLException, JSONException
+    }
+
+    interface SpellTrainerDAO {
+        + void save(SpellTrainer spellTrainer) throws Exception
+        + SpellTrainer load() throws Exception
+    }
+}
+
+SpellTrainerGUI -down-> SpellTrainer : uses
+SpellTrainerGUI -down-> SpellTrainerDAO : uses
+SpellTrainer -down-> WordImagePair : contains
+JSONSpellTrainerDAO -down-|> SpellTrainerDAO : implements
+
+@enduml

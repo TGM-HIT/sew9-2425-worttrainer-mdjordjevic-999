@@ -1,74 +1,76 @@
 @startuml
 
-package "spelltrainer.gui" {
+' Definiere die Pakete
+package com.example.spelltrainer.gui {
     class SpellTrainerGUI {
-        - static final String DATA_FILE
-        - SpellTrainer spellTrainer
-        - SpellTrainerDAO dao
-        - boolean lastAttemptCorrect
+        - DATA_FILE : String
+        - spellTrainer : SpellTrainer
+        - dao : SpellTrainerDAO
+        - lastAttemptCorrect : boolean
         + SpellTrainerGUI()
-        + void start()
-        - String buildMessage()
-        - String buildFinalStatistics()
-        - SpellTrainer createNewSpellTrainer()
-        - WordImagePair createWordImagePair(String word, String imageUrl)
-        - ImageIcon loadImageIcon(String imageUrl)
-        + static void main(String[] args)
+        + start()
+        - buildMessage() : String
+        - buildFinalStatistics() : String
+        - createNewSpellTrainer() : SpellTrainer
+        - createWordImagePair(word : String, imageUrl : String) : WordImagePair
+        - loadImageIcon(imageUrl : String) : ImageIcon
+        + main(args: String[]) : void
     }
 }
 
-package "spelltrainer.model" {
+package com.example.spelltrainer.model {
     class SpellTrainer {
-        - List<WordImagePair> wordImagePairs
-        - WordImagePair currentPair
-        - int totalAttempts
-        - int correctAttempts
-        - int incorrectAttempts
-        - Random random
-        + SpellTrainer(List<WordImagePair> wordImagePairs)
-        + List<WordImagePair> getWordImagePairs()
-        + void setWordImagePairs(List<WordImagePair> wordImagePairs)
-        + WordImagePair getCurrentPair()
-        + void setCurrentPair(WordImagePair currentPair)
-        + void selectPairByIndex(int index)
-        + void selectRandomPair()
-        + boolean guessWord(String guess)
-        + int getTotalAttempts()
-        + void setTotalAttempts(int totalAttempts)
-        + int getCorrectAttempts()
-        + void setCorrectAttempts(int correctAttempts)
-        + int getIncorrectAttempts()
-        + void setIncorrectAttempts(int incorrectAttempts)
+        - wordImagePairs : List<WordImagePair>
+        - currentPair : WordImagePair
+        - totalAttempts : int
+        - correctAttempts : int
+        - incorrectAttempts : int
+        - random : Random
+        + SpellTrainer(wordImagePairs : List<WordImagePair>)
+        + getWordImagePairs() : List<WordImagePair>
+        + setWordImagePairs(wordImagePairs : List<WordImagePair>) : void
+        + getCurrentPair() : WordImagePair
+        + setCurrentPair(currentPair : WordImagePair) : void
+        + selectPairByIndex(index : int) : void
+        + selectRandomPair() : void
+        + guessWord(guess : String) : boolean
+        + getTotalAttempts() : int
+        + setTotalAttempts(totalAttempts : int) : void
+        + getCorrectAttempts() : int
+        + setCorrectAttempts(correctAttempts : int) : void
+        + getIncorrectAttempts() : int
+        + setIncorrectAttempts(incorrectAttempts : int) : void
     }
 
     class WordImagePair {
-        - String word
-        - URL imageUrl
-        + WordImagePair(String word, String imageUrl) throws MalformedURLException
-        + String getWord()
-        + void setWord(String word)
-        + URL getImageUrl()
-        + void setImageUrl(String imageUrl) throws MalformedURLException
+        - word : String
+        - imageUrl : URL
+        + WordImagePair(word : String, imageUrl : String)
+        + getWord() : String
+        + setWord(word : String) : void
+        + getImageUrl() : URL
+        + setImageUrl(imageUrl : String) : void
     }
 }
 
-package "spelltrainer.persistence" {
-    class JSONSpellTrainerDAO {
-        - final String filename
-        + JSONSpellTrainerDAO(String filename)
-        + void save(SpellTrainer spellTrainer) throws IOException, JSONException
-        + SpellTrainer load() throws IOException, MalformedURLException, JSONException
-    }
-
+package com.example.spelltrainer.persistence {
     interface SpellTrainerDAO {
-        + void save(SpellTrainer spellTrainer) throws Exception
-        + SpellTrainer load() throws Exception
+        + save(spellTrainer : SpellTrainer) : void
+        + load() : SpellTrainer
     }
+
+    class JSONSpellTrainerDAO {
+        + save(spellTrainer : SpellTrainer) : void
+        + load() : SpellTrainer
+    }
+
+    ' Beziehung: JSONSpellTrainerDAO implementiert SpellTrainerDAO
+    JSONSpellTrainerDAO ..|> SpellTrainerDAO
 }
 
-SpellTrainerGUI -down-> SpellTrainer : uses
-SpellTrainerGUI -down-> SpellTrainerDAO : uses
-SpellTrainer -down-> WordImagePair : contains
-JSONSpellTrainerDAO -down-|> SpellTrainerDAO : implements
+' Beziehungen zwischen den Klassen
+SpellTrainerGUI --> SpellTrainer : verwendet
+SpellTrainerGUI --> SpellTrainerDAO : verwendet
+SpellTrainer --> "1..*" WordImagePair : enthält
 
 @enduml

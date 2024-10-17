@@ -1,76 +1,75 @@
 @startuml
+' Paketstruktur
 
-' Definiere die Pakete
-package com.example.spelltrainer.gui {
+package "com.example.spelltrainer.gui" {
     class SpellTrainerGUI {
-        - DATA_FILE : String
+        - DATA_FILE : String = "spelltrainer.json"
+        - PERSISTENCE_TYPE : String = "JSON"
         - spellTrainer : SpellTrainer
         - dao : SpellTrainerDAO
-        - lastAttemptCorrect : boolean
         + SpellTrainerGUI()
-        + start()
-        - buildMessage() : String
-        - buildFinalStatistics() : String
-        - createNewSpellTrainer() : SpellTrainer
-        - createWordImagePair(word : String, imageUrl : String) : WordImagePair
-        - loadImageIcon(imageUrl : String) : ImageIcon
-        + main(args: String[]) : void
+        + start() : void
+        + main(args : String[]) : void
     }
 }
 
-package com.example.spelltrainer.model {
+package "com.example.spelltrainer.model" {
     class SpellTrainer {
-        - wordImagePairs : List<WordImagePair>
-        - currentPair : WordImagePair
-        - totalAttempts : int
-        - correctAttempts : int
-        - incorrectAttempts : int
-        - random : Random
+        - wordImagePairs : List<WordImagePair> [0..*] "privat"
+        - currentPair : WordImagePair [0..1] "privat"
+        - totalAttempts : int "privat"
+        - correctAttempts : int "privat"
+        - incorrectAttempts : int "privat"
         + SpellTrainer(wordImagePairs : List<WordImagePair>)
-        + getWordImagePairs() : List<WordImagePair>
-        + setWordImagePairs(wordImagePairs : List<WordImagePair>) : void
-        + getCurrentPair() : WordImagePair
-        + setCurrentPair(currentPair : WordImagePair) : void
-        + selectPairByIndex(index : int) : void
         + selectRandomPair() : void
         + guessWord(guess : String) : boolean
         + getTotalAttempts() : int
-        + setTotalAttempts(totalAttempts : int) : void
         + getCorrectAttempts() : int
-        + setCorrectAttempts(correctAttempts : int) : void
         + getIncorrectAttempts() : int
-        + setIncorrectAttempts(incorrectAttempts : int) : void
     }
 
     class WordImagePair {
-        - word : String
-        - imageUrl : URL
+        - word : String "privat"
+        - imageUrl : URL "privat"
         + WordImagePair(word : String, imageUrl : String)
         + getWord() : String
-        + setWord(word : String) : void
         + getImageUrl() : URL
-        + setImageUrl(imageUrl : String) : void
     }
 }
 
-package com.example.spelltrainer.persistence {
+package "com.example.spelltrainer.persistence" {
     interface SpellTrainerDAO {
         + save(spellTrainer : SpellTrainer) : void
         + load() : SpellTrainer
     }
 
     class JSONSpellTrainerDAO {
+        - filename : String "privat"
+        + JSONSpellTrainerDAO(filename : String)
         + save(spellTrainer : SpellTrainer) : void
         + load() : SpellTrainer
     }
 
-    ' Beziehung: JSONSpellTrainerDAO implementiert SpellTrainerDAO
-    JSONSpellTrainerDAO ..|> SpellTrainerDAO
+    class SpellTrainerDAOFactory {
+        + getSpellTrainerDAO(type : String, filename : String) : SpellTrainerDAO
+    }
 }
 
-' Beziehungen zwischen den Klassen
-SpellTrainerGUI --> SpellTrainer : verwendet
-SpellTrainerGUI --> SpellTrainerDAO : verwendet
-SpellTrainer --> "1..*" WordImagePair : enthält
+' Beziehungen
+
+' Instanzpfeil: SpellTrainerGUI enthält eine Instanz von SpellTrainer
+SpellTrainerGUI --> SpellTrainer : dao : "1..1" "privat"
+
+' Instanzpfeil: SpellTrainerGUI nutzt SpellTrainerDAOFactory, um DAO zu erstellen
+SpellTrainerGUI --> SpellTrainerDAOFactory : "PERSISTENCE_TYPE, DATA_FILE" "1..1" "privat"
+
+' Implementierungspfeil: JSONSpellTrainerDAO implementiert SpellTrainerDAO
+JSONSpellTrainerDAO ..|> SpellTrainerDAO : implements
+
+' Instanzpfeil: SpellTrainerDAOFactory erstellt SpellTrainerDAO
+SpellTrainerDAOFactory --> SpellTrainerDAO : "1..1" "public"
+
+' Assoziationspfeil (Komposition): SpellTrainer enthält 1 oder kein aktuelles WordImagePair
+SpellTrainer *-- WordImagePair : currentPair : "0..1" "privat" wordImagePairs : "0..*" "privat"
 
 @enduml

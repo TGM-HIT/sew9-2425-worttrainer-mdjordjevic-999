@@ -2,8 +2,8 @@ package com.example.spelltrainer.gui;
 
 import com.example.spelltrainer.model.SpellTrainer;
 import com.example.spelltrainer.model.WordImagePair;
-import com.example.spelltrainer.persistence.JSONSpellTrainerDAO;
 import com.example.spelltrainer.persistence.SpellTrainerDAO;
+import com.example.spelltrainer.persistence.SpellTrainerDAOFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,7 +20,8 @@ import java.util.List;
  */
 public class SpellTrainerGUI {
 
-    private static final String DATA_FILE = "spelltrainer.json";
+    private static final String DATA_FILE = "spelltrainer.xml";
+    private static final String PERSISTENCE_TYPE = "XML"; // Kann auf "XML" geändert werden
 
     private SpellTrainer spellTrainer;
     private SpellTrainerDAO dao;
@@ -28,12 +29,13 @@ public class SpellTrainerGUI {
 
     /**
      * Konstruktor für die {@code SpellTrainerGUI}-Klasse.
-     * Initialisiert das DAO (Data Access Object) und lädt den gespeicherten Zustand
+     * Initialisiert das DAO (Data Access Object) über die Factory und lädt den gespeicherten Zustand
      * des {@link SpellTrainer}. Falls kein gespeicherter Zustand vorhanden ist oder
      * ein Fehler beim Laden auftritt, wird ein neuer {@code SpellTrainer} erstellt.
      */
     public SpellTrainerGUI() {
-        dao = new JSONSpellTrainerDAO(DATA_FILE);
+        // Verwende die Factory, um die gewünschte Persistenzstrategie zu erhalten
+        dao = SpellTrainerDAOFactory.getSpellTrainerDAO(PERSISTENCE_TYPE, DATA_FILE);
         try {
             spellTrainer = dao.load();
             if (spellTrainer == null) {
